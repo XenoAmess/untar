@@ -13,13 +13,28 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <quarkus.platform.version>3.6.4</quarkus.platform.version>
+        <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <jvm.args>
+            --add-opens=java.base/java.lang=ALL-UNNAMED,\
+            --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+        </jvm.args>
+        <quarkus.native.additional-build-args>
+            -H:+RemoveUnusedSymbols,\
+            -march=compatibility,\
+            --add-opens=java.base/java.lang=ALL-UNNAMED,\
+            --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+        </quarkus.native.additional-build-args>
+        <quarkus.native.container-build>false</quarkus.native.container-build>
+        <quarkus.native.compression.level>10</quarkus.native.compression.level>
+        <quarkus.native.compression.additional-args>--ultra-brute,-v</quarkus.native.compression.additional-args>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.quarkus.platform</groupId>
-                <artifactId>quarkus-bom</artifactId>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -81,4 +96,51 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <properties>
+                <skipITs>false</skipITs>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.auto-reachability-metadata>true</quarkus.native.auto-reachability-metadata>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>0.11.3</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>generate-metadata</id>
+                                <goals>
+                                    <goal>merge-agent-files</goal>
+                                    <goal>metadata-copy</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <metadataCopy>
+                                        <enabled>true</enabled>
+                                        <outputDirectory>${project.basedir}/src/main/resources/META-INF/native-image
+                                        </outputDirectory>
+                                    </metadataCopy>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <agent>
+                                <enabled>true</enabled>
+                            </agent>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
