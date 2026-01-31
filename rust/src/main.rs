@@ -2,10 +2,10 @@ use anyhow::{anyhow, Context, Result};
 use clap::Parser;
 use std::fs::{self, File};
 use std::io::{self, BufReader, Read, Seek};
-use std::path::PathBuf;
-use std::process::exit;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+use std::path::PathBuf;
+use std::process::exit;
 
 /// Extract tar/tar.gz/tgz/tar.xz/tar.bz2/tar.zip packages
 #[derive(Parser, Debug)]
@@ -88,8 +88,7 @@ fn format_size(size: u64) -> String {
 }
 
 fn extract_archive(file_path: &str, output_dir: &str, verbose: bool) -> Result<()> {
-    let file = File::open(file_path)
-        .with_context(|| format!("Cannot open file: {}", file_path))?;
+    let file = File::open(file_path).with_context(|| format!("Cannot open file: {}", file_path))?;
 
     let file_name_lower = file_path.to_lowercase();
 
@@ -169,7 +168,12 @@ fn extract_tar_reader<R: Read>(reader: R, output_dir: &str, verbose: bool) -> Re
             fs::create_dir_all(&entry_path)?;
         } else {
             if verbose {
-                println!("[{:?}] {} ({})", entry_count, path.display(), format_size(size));
+                println!(
+                    "[{:?}] {} ({})",
+                    entry_count,
+                    path.display(),
+                    format_size(size)
+                );
             }
 
             let mut file = File::create(&entry_path)?;
