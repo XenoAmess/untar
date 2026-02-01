@@ -42,16 +42,16 @@ public class Main implements Callable<Integer> {
     }
 
     @Option(names = {"-C", "--directory"}, descriptionKey = "directory", paramLabel = "DIR")
-    private String directory = ".";
+    String directory = ".";
 
     @Option(names = {"-v", "--verbose"}, descriptionKey = "verbose")
-    private boolean verbose = true;
+    boolean verbose = true;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, descriptionKey = "help")
-    private boolean help = false;
+    boolean help = false;
 
     @Parameters(paramLabel = "FILE", descriptionKey = "file")
-    private String archiveFile;
+    String archiveFile;
 
     @Override
     public Integer call() throws Exception {
