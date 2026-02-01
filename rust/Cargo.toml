@@ -1,0 +1,31 @@
+[package]
+name = "untar"
+version = "1.0.0"
+edition = "2021"
+authors = ["xenoamess"]
+description = "Extract tar/tar.gz/tgz/tar.xz/tar.bz2/tar.zip packages"
+
+[dependencies]
+# Minimal tar extraction with support for compressed archives
+tar = "0.4"
+# XZ (lzma2) compression support
+xz2 = "0.1"
+# BZip2 compression support
+bzip2 = "0.4"
+# GZip compression support
+flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
+# Zip archive support
+zip = { version = "2", default-features = false }
+
+# Use anyhow for error handling (minimal overhead)
+anyhow = "1.0"
+# Clap for CLI argument parsing (using features to minimize size)
+clap = { version = "4.4", features = ["cargo", "derive"] }
+
+[profile.release]
+opt-level = "z"        # Optimize for size
+lto = true             # Link-time optimization
+codegen-units = 1      # Better optimization
+strip = true           # Strip symbols
+panic = "abort"        # Simpler panic handling
+overflow-checks = false
